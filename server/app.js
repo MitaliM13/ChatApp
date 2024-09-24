@@ -19,15 +19,19 @@ const io = new Server(server, {
 app.use(cors())
 
 app.get('/', (req, res) => {
-    res.send('Hello World!') 
+    res.send('This is the server!') 
 })
 
 io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`)
 
-    socket.on("message", (data) => {
-        console.log(data)
-        io.emit("received", data)
+    socket.on("message", ({room, message}) => {
+        console.log({room, message})
+        socket.to(room).emit("received", message)
+    })
+
+    socket.on('join_room', (room) => {
+        socket.join(room)
     })
 
     socket.on('disconnect', () => {
